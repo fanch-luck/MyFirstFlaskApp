@@ -6,7 +6,7 @@
 # @Date:      2020/1/18 19:29
 # @Content:   一个最简单的Flask实现
 # -----------------------------------------------------------
-from flask import Flask
+from flask import Flask, redirect, url_for, request
 
 app = Flask(__name__)  # Flask类的一个对象是我们的WSGI应用程序 Flask构造函数使用当前模块（__name __）的名称作为参数。
 
@@ -42,6 +42,36 @@ def commit_param_int(record_id):
 @app.route('/commit/param_float/<float:temperature>')
 def commit_param_float(temperature):
     return 'You commit a float param(temperature): %f' % temperature
+
+
+# 创建以下内容为login.html表单，演示表单中利用POST方法将数据发送到URL<login>,
+# 该URL接收数据并处理后显示成功信息<success>
+"""
+<html>
+   <body>
+      
+      <form action = "http://localhost:5000/login" method = "post">
+         <p>Enter Name:</p>
+         <p><input type = "text" name = "nm" /></p>
+         <p><input type = "submit" value = "submit" /></p>
+      </form>
+      
+   </body>
+</html>
+"""
+@app.route('/success/<name>')
+def success(name):
+    return 'welcome %s' % name
+
+
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    if request.method == 'POST':
+        user = request.form['nm']
+        return redirect(url_for('success', name=user))  # 再重定向（？）到/success
+    else:
+        user = request.args.get('nm')  # 如果指定了method='GET'，则通过args字典获取nm的值
+        return redirect(url_for('success', name=user))
 
 
 
